@@ -1,0 +1,80 @@
+.repository-list-container {
+    padding: 20px;
+    font-family: Arial, sans-serif;
+  }
+  
+  .user-info {
+    display: flex;
+    align-items: center;
+    margin-bottom: 20px;
+    border-bottom: 2px solid #ddd;
+    padding-bottom: 20px;
+  }
+  
+  .avatar {
+    width: 100px;
+    height: 100px;
+    border-radius: 50%;
+    margin-right: 20px;
+  }
+  
+  .user-details {
+    flex: 1;
+  }
+  
+  .bio {
+    font-style: italic;
+    color: #555;
+  }
+  
+  .view-followers {
+    display: inline-block;
+    margin-top: 10px;
+    text-decoration: none;
+    color: #007bff;
+    font-weight: bold;
+  }
+  
+  .repositories-heading {
+    margin-top: 20px;
+    margin-bottom: 10px;
+    font-size: 1.5em;
+  }
+  
+  .repositories-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 20px;
+  }
+  
+  .repository-card {
+    padding: 15px;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  }
+  
+  .repository-card h4 {
+    margin: 0 0 10px 0;
+    font-size: 1.2em;
+  }
+  
+  .repository-card p {
+    margin: 0 0 15px 0;
+    color: #666;
+  }
+  
+  .details-link {
+    text-decoration: none;
+    color: #007bff;
+    font-weight: bold;
+  }
+  
+  .back-to-search {
+    display: inline-block;
+    margin-top: 20px;
+    text-decoration: none;
+    color: #007bff;
+    font-weight: bold;
+  }
+  

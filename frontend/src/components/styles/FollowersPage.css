@@ -1,0 +1,59 @@
+.followers-page-container {
+    padding: 20px;
+    font-family: Arial, sans-serif;
+  }
+  
+  .followers-heading {
+    margin-bottom: 20px;
+    font-size: 1.5em;
+  }
+  
+  .followers-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 20px;
+  }
+  
+  .follower-card {
+    padding: 15px;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    text-align: center;
+    background-color: #f9f9f9;
+  }
+  
+  .follower-avatar {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    margin-bottom: 10px;
+  }
+  
+  .follower-name {
+    font-size: 1.2em;
+    margin-bottom: 10px;
+  }
+  
+  .view-repositories-link {
+    text-decoration: none;
+    color: #007bff;
+    font-weight: bold;
+  }
+  
+  .view-repositories-link:hover {
+    text-decoration: underline;
+  }
+  
+  .back-to-repositories {
+    display: inline-block;
+    margin-top: 20px;
+    text-decoration: none;
+    color: #007bff;
+    font-weight: bold;
+  }
+  
+  .back-to-repositories:hover {
+    text-decoration: underline;
+  }
+  
