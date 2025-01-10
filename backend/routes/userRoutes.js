@@ -2,41 +2,42 @@ const express = require('express');
 const axios = require('axios');
 const User = require('../models/user');
 const router = express.Router();
+const validate = require("./../middlewares/validationMiddleware");
 
 // Save GitHub user data
-router.post('/:username', async (req, res) => {
-  const { username } = req.params;
-  console.log("somya")
-  try {
-      const existingUser = await User.findOne({ username });
-      if (existingUser) return res.status(200).json(existingUser);
-      
-      const response = await axios.get(`https://api.github.com/users/${username}`);
-      console.log("somya1")
-      const userData = response.data;
-      console.log("response :", userData)
-
-    const newUser = new User({
-      username: userData.login,
-      name: userData.name,
-      avatar_url: userData.avatar_url,
-      bio: userData.bio,
-      blog: userData.blog,
-      location: userData.location,
-      followers: userData.followers,
-      following: userData.following,
-      public_repos: userData.public_repos,
-      public_gists: userData.public_gists,
-      created_at: userData.created_at,
-    });
-
-    await newUser.save();
-    res.status(201).json(newUser);
-  } catch (error) {
-    console.log(error.message)
-    res.status(500).json({ error: error.message });
-  }
-});
+router.post(
+    '/:username',
+    validate([check('username').isString().trim().notEmpty().withMessage('Username is required.')]),
+    async (req, res) => {
+      const { username } = req.params;
+      try {
+        const existingUser = await User.findOne({ username });
+        if (existingUser) return res.status(200).json(existingUser);
+  
+        const response = await axios.get(`https://api.github.com/users/${username}`);
+        const userData = response.data;
+  
+        const newUser = new User({
+          username: userData.login,
+          name: userData.name,
+          avatar_url: userData.avatar_url,
+          bio: userData.bio,
+          blog: userData.blog,
+          location: userData.location,
+          followers: userData.followers,
+          following: userData.following,
+          public_repos: userData.public_repos,
+          public_gists: userData.public_gists,
+          created_at: userData.created_at,
+        });
+  
+        await newUser.save();
+        res.status(201).json(newUser);
+      } catch (error) {
+        res.status(500).json({ error: error.message });
+      }
+    }
+  );
 
 // Fetch all users
 router.get('/', async (req, res) => {

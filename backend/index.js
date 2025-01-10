@@ -9,7 +9,6 @@ app.use(express.json());
 app.use(cors());
 
 // MongoDB connection
-// mongodb+srv://<db_username>:<db_password>@cluster0.cb7b3hu.mongodb.net/
 mongoose.connect(process.env.MONGO_URL, {
   useNewUrlParser: true,
   useUnifiedTopology: true,
@@ -23,4 +22,4 @@ db.once('open', () => console.log('Connected to MongoDB'));
 // Routes
 app.use('/api/users', userRoutes);
 
-app.listen(process.env.PORT, () => console.log('Server running on http://localhost:5000'));
+app.listen(process.env.PORT, () => console.log(`Server running on http://localhost:${process.env.PORT}`));
