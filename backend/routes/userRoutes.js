@@ -2,6 +2,7 @@ const express = require('express');
 const axios = require('axios');
 const User = require('../models/user');
 const router = express.Router();
+const { check } = require('express-validator');
 const validate = require("./../middlewares/validationMiddleware");
 
 // Save GitHub user data
@@ -50,38 +51,60 @@ router.get('/', async (req, res) => {
 });
 
 // Soft delete a user
-router.delete('/:username', async (req, res) => {
-  const { username } = req.params;
-  try {
-    await User.updateOne({ username }, { deleted: true });
-    res.status(200).json({ message: 'User soft-deleted successfully' });
-  } catch (error) {
-    res.status(500).json({ error: error.message });
-  }
-});
+router.delete(
+    '/:username',
+    validate([check('username').isString().trim().notEmpty().withMessage('Username is required.')]),
+    async (req, res) => {
+      const { username } = req.params;
+      try {
+        const result = await User.updateOne({ username }, { deleted: true });
+        if (result.modifiedCount === 0) {
+          return res.status(404).json({ error: 'User not found or already deleted.' });
+        }
+        res.status(200).json({ message: 'User soft-deleted successfully' });
+      } catch (error) {
+        res.status(500).json({ error: error.message });
+      }
+    }
+  );
 
 // Update user fields
-router.put('/:username', async (req, res) => {
-  const { username } = req.params;
-  const updates = req.body;
-  try {
-    const updatedUser = await User.findOneAndUpdate({ username }, updates, { new: true });
-    res.status(200).json(updatedUser);
-  } catch (error) {
-    res.status(500).json({ error: error.message });
-  }
-});
+router.put(
+    '/:username',
+    validate([check('username').isString().trim().notEmpty().withMessage('Username is required.')]),
+    async (req, res) => {
+      const { username } = req.params;
+      const updates = req.body;
+      try {
+        const updatedUser = await User.findOneAndUpdate({ username }, updates, { new: true });
+        if (!updatedUser) return res.status(404).json({ error: 'User not found.' });
+        res.status(200).json(updatedUser);
+      } catch (error) {
+        res.status(500).json({ error: error.message });
+      }
+    }
+  );
 
 // Sort users by a field
-router.get('/sorted/:field', async (req, res) => {
-  const { field } = req.params;
-  try {
-    const users = await User.find({ deleted: false }).sort({ [field]: -1 });
-    res.status(200).json(users);
-  } catch (error) {
-    res.status(500).json({ error: error.message });
-  }
-});
+router.get(
+    '/sorted/:field',
+    validate([
+      check('field')
+        .isString()
+        .trim()
+        .isIn(['followers', 'following', 'public_repos', 'public_gists', 'created_at'])
+        .withMessage('Invalid sorting field.'),
+    ]),
+    async (req, res) => {
+      const { field } = req.params;
+      try {
+        const users = await User.find({ deleted: false }).sort({ [field]: -1 });
+        res.status(200).json(users);
+      } catch (error) {
+        res.status(500).json({ error: error.message });
+      }
+    }
+  );
 
 // Search users by username, location, etc.
 router.get('/search', async (req, res) => {
@@ -98,30 +121,34 @@ router.get('/search', async (req, res) => {
     } catch (error) {
       res.status(500).json({ error: error.message });
     }
-  })
+  });
 
 // Find mutual followers and save as friends
-router.get('/:username/mutual-friends', async (req, res) => {
-    const { username } = req.params;
-    try {
-      const user = await User.findOne({ username });
-      if (!user) return res.status(404).json({ error: 'User not found' });
+router.get(
+    '/:username/mutual-friends',
+    validate([check('username').isString().trim().notEmpty().withMessage('Username is required.')]),
+    async (req, res) => {
+      const { username } = req.params;
+      try {
+        const user = await User.findOne({ username });
+        if (!user) return res.status(404).json({ error: 'User not found' });
   
-      const followersResponse = await axios.get(`https://api.github.com/users/${username}/followers`);
-      const followingResponse = await axios.get(`https://api.github.com/users/${username}/following`);
+        const followersResponse = await axios.get(`https://api.github.com/users/${username}/followers`);
+        const followingResponse = await axios.get(`https://api.github.com/users/${username}/following`);
   
-      const followers = followersResponse.data.map(f => f.login);
-      const following = followingResponse.data.map(f => f.login);
+        const followers = followersResponse.data.map((f) => f.login);
+        const following = followingResponse.data.map((f) => f.login);
   
-      const mutualFriends = followers.filter(f => following.includes(f));
+        const mutualFriends = followers.filter((f) => following.includes(f));
   
-      user.friends = mutualFriends;
-      await user.save();
+        user.friends = mutualFriends;
+        await user.save();
   
-      res.status(200).json({ mutualFriends });
-    } catch (error) {
-      res.status(500).json({ error: error.message });
+        res.status(200).json({ mutualFriends });
+      } catch (error) {
+        res.status(500).json({ error: error.message });
+      }
     }
-  });
+  );
 
 module.exports = router;
