@@ -2,11 +2,13 @@ import React, { useEffect, useState } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import './styles/RepositoryList.css';
 import { getCachedData, setCachedData } from '../cache';
+import Loader from './Loader';
 
 function RepositoryList() {
   const { username } = useParams();
   const [userInfo, setUserInfo] = useState(null);
   const [repositories, setRepositories] = useState([]);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const cachedUserInfo = getCachedData('userData', username);
@@ -25,16 +27,20 @@ function RepositoryList() {
 
     if (cachedRepositories) {
         setRepositories(cachedRepositories);
+        setLoading(false);
       } else {
         fetch(`${process.env.REACT_APP_BACKEND_URI}/${username}/repos`)
           .then((response) => response.json())
           .then((data) => {
             setRepositories(data);
             setCachedData('repositories', username, data);
+            setLoading(false);
           });
       }
 
   }, [username]);
+
+  if (loading) return <Loader />;
 
   return (
     <div className="repository-list-container">

@@ -2,24 +2,30 @@ import React, { useEffect, useState } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import './styles/FollowersPage.css';
 import { getCachedData, setCachedData } from '../cache';
+import Loader from './Loader';
 
 function FollowersPage() {
   const { username } = useParams();
   const [followers, setFollowers] = useState([]);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const cachedFollowers = getCachedData('followers', username);
     if (cachedFollowers) {
         setFollowers(cachedFollowers);
+        setLoading(false);
       } else {
         fetch(`${process.env.REACT_APP_BACKEND_URI}/${username}/followers`)
           .then((response) => response.json())
           .then((data) => {
             setFollowers(data);
             setCachedData('followers', username, data);
+            setLoading(false);
           });
       }
   }, [username]);
+
+  if (loading) return <Loader />;
 
   return (
     <div className="followers-page-container">

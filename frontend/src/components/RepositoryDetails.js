@@ -1,20 +1,30 @@
 import React, { useEffect, useState } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import './styles/RepositoryDetails.css';
+import Loader from "./Loader";
 
 function RepositoryDetails() {
   const { username, repoName } = useParams();
   const [repository, setRepository] = useState(null);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const fetchRepositoryDetails = async () => {
-      const response = await fetch(`https://api.github.com/repos/${username}/${repoName}`);
-      const data = await response.json();
-      setRepository(data);
+      try {
+        const response = await fetch(`${process.REACT_APP_BACKEND_URI}/repos/${username}/${repoName}`);
+        const data = await response.json();
+        setRepository(data);
+      } catch (error) {
+        console.error("Error fetching repository details:", error);
+      } finally {
+        setLoading(false);
+      }
     };
 
     fetchRepositoryDetails();
   }, [username, repoName]);
+
+  if (loading) return <Loader />;
 
   return (
     <div className="repository-details-container">
