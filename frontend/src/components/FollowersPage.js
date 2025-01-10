@@ -12,7 +12,7 @@ function FollowersPage() {
     if (cachedFollowers) {
         setFollowers(cachedFollowers);
       } else {
-        fetch(`https://api.github.com/users/${username}/followers`)
+        fetch(`${process.env.REACT_APP_BACKEND_URI}/${username}/followers`)
           .then((response) => response.json())
           .then((data) => {
             setFollowers(data);

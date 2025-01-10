@@ -6,7 +6,7 @@ function UserSearch() {
 
   const fetchUserData = async () => {
     try {
-      const response = await fetch(`http://localhost:5000/api/users/${username}`, {
+      const response = await fetch(`${process.env.REACT_APP_BACKEND_URI}/${username}`, {
         method: 'POST',
       });
       const data = await response.json();

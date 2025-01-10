@@ -12,16 +12,10 @@ function RepositoryList() {
     const cachedUserInfo = getCachedData('userData', username);
     const cachedRepositories = getCachedData('repositories', username);
 
-    // const fetchUserInfo = async () => {
-    //   const response = await fetch(`https://api.github.com/users/${username}`);
-    //   const data = await response.json();
-    //   setUserInfo(data);
-    //   setCachedData('userData', username, data);
-    // };
     if (cachedUserInfo) {
         setUserInfo(cachedUserInfo);
       } else {
-        fetch(`https://api.github.com/users/${username}`)
+        fetch(`${process.env.REACT_APP_BACKEND_URI}/${username}`)
           .then((response) => response.json())
           .then((data) => {
             setUserInfo(data);
@@ -29,16 +23,10 @@ function RepositoryList() {
           });
       }
 
-    // const fetchRepositories = async () => {
-    //   const response = await fetch(`https://api.github.com/users/${username}/repos`);
-    //   const data = await response.json();
-    //   setRepositories(data);
-    //   setCachedData('repositories', username, data);
-    // };
     if (cachedRepositories) {
         setRepositories(cachedRepositories);
       } else {
-        fetch(`https://api.github.com/users/${username}/repos`)
+        fetch(`${process.env.REACT_APP_BACKEND_URI}/${username}/repos`)
           .then((response) => response.json())
           .then((data) => {
             setRepositories(data);
@@ -46,8 +34,6 @@ function RepositoryList() {
           });
       }
 
-    // fetchUserInfo();
-    // fetchRepositories();
   }, [username]);
 
   return (

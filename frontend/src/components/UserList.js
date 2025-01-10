@@ -5,7 +5,7 @@ function UserList() {
 
   const fetchSortedUsers = async (field) => {
     try {
-      const response = await fetch(`http://localhost:5000/api/users/sorted/${field}`);
+      const response = await fetch(`${process.env.REACT_APP_BACKEND_URI}/sorted/${field}`);
       const data = await response.json();
       setSortedUsers(data);
     } catch (error) {
