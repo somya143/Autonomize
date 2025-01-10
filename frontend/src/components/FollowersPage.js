@@ -1,19 +1,24 @@
 import React, { useEffect, useState } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import './styles/FollowersPage.css';
+import { getCachedData, setCachedData } from '../cache';
 
 function FollowersPage() {
   const { username } = useParams();
   const [followers, setFollowers] = useState([]);
 
   useEffect(() => {
-    const fetchFollowers = async () => {
-      const response = await fetch(`https://api.github.com/users/${username}/followers`);
-      const data = await response.json();
-      setFollowers(data);
-    };
-
-    fetchFollowers();
+    const cachedFollowers = getCachedData('followers', username);
+    if (cachedFollowers) {
+        setFollowers(cachedFollowers);
+      } else {
+        fetch(`https://api.github.com/users/${username}/followers`)
+          .then((response) => response.json())
+          .then((data) => {
+            setFollowers(data);
+            setCachedData('followers', username, data);
+          });
+      }
   }, [username]);
 
   return (

@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import './styles/RepositoryList.css';
+import { getCachedData, setCachedData } from '../cache';
 
 function RepositoryList() {
   const { username } = useParams();
@@ -8,20 +9,45 @@ function RepositoryList() {
   const [repositories, setRepositories] = useState([]);
 
   useEffect(() => {
-    const fetchUserInfo = async () => {
-      const response = await fetch(`https://api.github.com/users/${username}`);
-      const data = await response.json();
-      setUserInfo(data);
-    };
+    const cachedUserInfo = getCachedData('userData', username);
+    const cachedRepositories = getCachedData('repositories', username);
 
-    const fetchRepositories = async () => {
-      const response = await fetch(`https://api.github.com/users/${username}/repos`);
-      const data = await response.json();
-      setRepositories(data);
-    };
+    // const fetchUserInfo = async () => {
+    //   const response = await fetch(`https://api.github.com/users/${username}`);
+    //   const data = await response.json();
+    //   setUserInfo(data);
+    //   setCachedData('userData', username, data);
+    // };
+    if (cachedUserInfo) {
+        setUserInfo(cachedUserInfo);
+      } else {
+        fetch(`https://api.github.com/users/${username}`)
+          .then((response) => response.json())
+          .then((data) => {
+            setUserInfo(data);
+            setCachedData('userData', username, data);
+          });
+      }
 
-    fetchUserInfo();
-    fetchRepositories();
+    // const fetchRepositories = async () => {
+    //   const response = await fetch(`https://api.github.com/users/${username}/repos`);
+    //   const data = await response.json();
+    //   setRepositories(data);
+    //   setCachedData('repositories', username, data);
+    // };
+    if (cachedRepositories) {
+        setRepositories(cachedRepositories);
+      } else {
+        fetch(`https://api.github.com/users/${username}/repos`)
+          .then((response) => response.json())
+          .then((data) => {
+            setRepositories(data);
+            setCachedData('repositories', username, data);
+          });
+      }
+
+    // fetchUserInfo();
+    // fetchRepositories();
   }, [username]);
 
   return (
